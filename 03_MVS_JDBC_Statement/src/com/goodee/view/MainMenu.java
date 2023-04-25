@@ -2,6 +2,7 @@ package com.goodee.view;
 
 import java.util.ArrayList;
 import java.util.Scanner;
+
 import com.goodee.controller.MemberController;
 import com.goodee.model.vo.Member;
 
@@ -34,11 +35,11 @@ public class MainMenu {
 
 			switch (menu) {
 			case 1:	insertMember(); break; // 현재 클래스에서 처리
-//			case 2: selectList(); break; // Controll 패키지에 있는 클래스에 처리
-//			case 3: selectById(); break; // Controll 패키지에 있는 클래스에 처리
-//			case 4: selectByName(); break; // Controll 패키지에 있는 클래스에 처리
-//			case 5: updateMember(); break; // 현재 클래스에서 처리
-//			case 6: deleteMember(); break; // Controll 패키지에 있는 클래스에 처리
+			case 2: mc.selectList(); break; // Controll 패키지에 있는 클래스에 처리
+			case 3: mc.selectById(inputMemberId()); break; // Controll 패키지에 있는 클래스에 처리
+			case 4: mc.selectByName(inputMemberName()); break; // Controll 패키지에 있는 클래스에 처리
+			case 5: updateMember(); break; // 현재 클래스에서 처리
+			case 6: mc.deleteMember(inputMemberId()); break; // Controll 패키지에 있는 클래스에 처리
 			case 0: System.out.println("이용해 주셔서 감사합니다."); return;
 			default: System.out.println("메뉴를 잘못입력했습니다. 다시 입력해주세요.");
 			}
@@ -110,7 +111,7 @@ public class MainMenu {
 		System.out.println("변경할 주소 : ");
 		String address = sc.nextLine();
 
-//		mc.updateMember(userId, userPwd, email, phone, address);
+		mc.updateMember(userId, userPwd, email, phone, address);
 	}
 
 	// ----------------------응답화면-------------------------------------
