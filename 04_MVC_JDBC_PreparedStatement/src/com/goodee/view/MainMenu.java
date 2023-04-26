@@ -24,7 +24,7 @@ public class MainMenu {
 			System.out.println("1. 회원 추가");
 			System.out.println("2. 회원 전체 조회");
 			System.out.println("3. 회원 아이디 검색");
-			System.out.println("4. 키워드 검색(회원 아이디 또는 회원 검색");
+			System.out.println("4. 키워드 검색(회원 아이디 또는 회원 검색)");
 			System.out.println("5. 회원 정보 변경");
 			System.out.println("6. 회원 탈퇴");
 			System.out.println("0. 프로그램 종료");
