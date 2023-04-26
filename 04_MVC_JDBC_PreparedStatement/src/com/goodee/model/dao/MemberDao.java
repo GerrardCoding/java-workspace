@@ -111,7 +111,7 @@ public class MemberDao {
 			ArrayList<Member> list = new ArrayList<>();
 			
 			Connection conn = null;
-			Statement  stmt = null;
+			PreparedStatement  pstmt = null;
 			ResultSet  rset = null;
 			
 			String sql = "SELECT * FROM MEMBER";
@@ -119,8 +119,8 @@ public class MemberDao {
 			try {
 				Class.forName("oracle.jdbc.driver.OracleDriver");
 				conn = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:xe","JDBC","JDBC");
-				stmt = conn.createStatement();
-				rset = stmt.executeQuery(sql);
+				pstmt = conn.prepareStatement(sql);
+				rset = pstmt.executeQuery();
 				
 				while(rset.next()) {
 					Member m = new Member();
@@ -148,7 +148,7 @@ public class MemberDao {
 			} finally {
 				try {
 					rset.close();
-					stmt.close();
+					pstmt.close();
 					conn.close();
 				} catch (SQLException e) {
 					e.printStackTrace();
@@ -314,17 +314,18 @@ public class MemberDao {
 			int result = 0;
 			
 			Connection conn = null;
-			Statement  stmt = null;
+			PreparedStatement  pstmt = null;
 			
-			String sql = "DELETE FROM MEMBER"
-					+ "WHERE USER_ID = '" + userId + "'";
+			String sql = "DELETE FROM MEMBER WHERE USER_ID = ?";
 			
 			try {
 				Class.forName("oracle.jdbc.driver.OracleDriver");
 				
 				conn = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:xe","JDBC","JDBC");
-				stmt = conn.createStatement();
-				result = stmt.executeUpdate(sql);
+				pstmt = conn.prepareStatement(sql);
+				
+				pstmt.setString(1, userId);
+				result = pstmt.executeUpdate();
 				
 				if(result > 0) { //성공
 					conn.commit();
@@ -336,7 +337,7 @@ public class MemberDao {
 				e.printStackTrace();
 			} finally {
 				try {
-					stmt.close();
+					pstmt.close();
 					conn.close();
 				} catch (SQLException e) {
 					e.printStackTrace();
