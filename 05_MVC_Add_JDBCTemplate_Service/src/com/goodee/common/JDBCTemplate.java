@@ -63,5 +63,7 @@ public class JDBCTemplate {
 	}
 	
 	//2) ResultSet객체 전달받아서 반납해주는 메서드
-	public static void close()
+	public static void close() {
+		
+	}
 }
