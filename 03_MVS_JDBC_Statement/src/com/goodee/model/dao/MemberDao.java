@@ -2,6 +2,7 @@ package com.goodee.model.dao;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -15,36 +16,78 @@ public class MemberDao {
  * DAO(Data Access Object)
  * : DB에 직접 접근해서 사용자의 요청에 맞는 SQL문을 실행한 후 결과를 받음.(JDBC이용)
  *   결과를 Controller로 반환함.
+ * 
+ * >> Statement와 PreparedStatement의 특징
+ * - 두 객체 모두 sql문을 실행하고 결과를 받아내는 객체. Connection객체를 이용해서 생성.(둥 중 하나 이용)
+ * - Statement가 PreparedStatement의 부모(상속구조)
+ * 
+ * - Statement와 PreparedStatement의 차이점
+ * * Statement는 sql문을 전달하면서 바로 실행하는 객체
+ * 	(즉, sql문을 완성형태로 만들어야함. => 사용자가 입력한 값이 완전히 채워진 상태. 그렇지 않으면 SQL예외 발생)
  * 	
+ * > 기존의 Statement 방식
+ * 1) Connection 객체를 통해 Statement 객체 생성
+ * 	  - stmt = conn.createStatement();
+ * 2) Statement객체를 통해서 완성된 sql문 실행 및 결과 받기
+ * 	  - rset = stmt.executeXXX(완성된 sql문);
+ * 
+ * * PreparedStatement 같은 경우 미완성 sql문을 잠시 보관해두었다가 나중에 완성한 후 실행할 수 있는 객체
+ *   (즉, 사용자가 입력한 값을 채워두지 않고 각각 들어갈 공간(? 사용)을 미리 확보만 해두면 됨.)
+ *   
+ *   >PreparedStatement방식
+ *   1)Connection 객체를 통해 PreparedStatement 객체 생성
+ *     - pstmt = conn.prepareStatement(미완성 sql문);
+ *   2)pstmt에 담긴 sql문이 미완성 상태일 때 우선 완성시켜야함.
+ *     - pstmt.setXXX(1,대체할값);
+ *       pstmt.setXXX(2,대체할값);
+ *   3)sql문 실행 및 결과 받기
+ *     - 결과(rset 또는 int변수) = pstmt
  */
 	
 	public int insertMember(Member m) {
 		
 		int result = 0;
 		
-		Connection conn = null;
-		Statement  stmt = null;
+		Connection		   conn = null;
+		PreparedStatement  pstmt = null;
 		
-		String sql = "INSERT INTO MEMBER VALUES(SEQ_USERNO.NEXTVAL, '"+ m.getUserId()  + "', "
-															  + "'"+ m.getUserPwd() + "', "
-															  + "'"+ m.getUserName() + "', "
-															  + "'"+ m.getGender() + "', "
-															  	   + m.getAge() + ", "
-															  + "'"+ m.getEmail() + "', "
-															  + "'"+ m.getPhone() + "', "
-															  + "'"+ m.getAddress() + "', "
-															  + "'"+ m.getHobby() + "', SYSDATE)";
-						
+//		String sql = "INSERT INTO MEMBER VALUES(SEQ_USERNO.NEXTVAL, '"+ m.getUserId()  + "', "
+//															  + "'"+ m.getUserPwd() + "', "
+//															  + "'"+ m.getUserName() + "', "
+//															  + "'"+ m.getGender() + "', "
+//															  	   + m.getAge() + ", "
+//															  + "'"+ m.getEmail() + "', "
+//															  + "'"+ m.getPhone() + "', "
+//															  + "'"+ m.getAddress() + "', "
+//															  + "'"+ m.getHobby() + "', SYSDATE)";
+		String sql = "INSERT INTO MEMBER VALUES(SEQ_UNO.NEXTVAL,?,?,?,?,?,?,?,?,?,SYSDATE)";				
+		
 		try {
 			Class.forName("oracle.jdbc.driver.OracleDriver");
 			
 			conn = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:xe","JDBC","JDBC");
-			stmt = conn.createStatement();
-			result = stmt.executeUpdate(sql);
+//			stmt = conn.createStatement();
+			pstmt = conn.prepareStatement(sql);
 			
-			if(result > 0) {
+			//pstmt.setString(물음표순서, 대체할값) => '대체할값'(양옆에 홑따옴표로 감싸준 데이터가 들어감)
+			//pstmt.setInt(물음표순서, 대체할값)	=> 홑따옴표없이 데이터가 들어감
+			pstmt.setString(1, m.getUserId());
+			pstmt.setString(2, m.getUserPwd());
+			pstmt.setString(3, m.getUserName());
+			pstmt.setString(4, m.getGender());
+			pstmt.setInt(5, m.getAge());
+			pstmt.setString(6, m.getEmail());
+			pstmt.setString(7, m.getPhone());
+			pstmt.setString(8, m.getAddress());
+			pstmt.setString(9, m.getHobby());
+			
+			
+			
+			result = pstmt.executeUpdate();
+			
+			if(result > 0) { //성공
 				conn.commit();
-			}else {
+			}else {			// 실패
 				conn.rollback();
 			}
 		} catch (ClassNotFoundException e) {
@@ -53,7 +96,7 @@ public class MemberDao {
 			e.printStackTrace();
 		} finally {
 			try {
-				stmt.close();
+				pstmt.close();
 				conn.close();
 			} catch (SQLException e) {
 				e.printStackTrace();
@@ -259,7 +302,6 @@ public class MemberDao {
 					stmt.close();
 					conn.close();
 				} catch (SQLException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 			}
@@ -295,12 +337,11 @@ public class MemberDao {
 			} finally {
 				try {
 					stmt.close();
+					conn.close();
 				} catch (SQLException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 			}
-			
 			
 			return result;
 		}
