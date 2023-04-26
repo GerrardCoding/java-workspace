@@ -102,5 +102,15 @@ public class MemberController {
 		
 		return result;
 	}
-	
+
+	public void loginMember(String userId, String userPwd) {
+		Member m = MemberDao().loginMember(userId,userPwd);
+		
+		if(m == null) {
+			new MainMenu().displayFail("로그인 실패");
+		}else {
+			new MainMenu().displaySuccess(m.getUserName()+"님, 환영합니다.");
+		}
+	}
+
 }
