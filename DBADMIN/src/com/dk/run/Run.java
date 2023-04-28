@@ -1,6 +1,6 @@
 package com.dk.run;
 
-import com.goodee.view.MainMenu;
+import com.dk.view.MainMenu;
 
 public class Run {
 

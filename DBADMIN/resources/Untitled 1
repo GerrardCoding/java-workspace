@@ -1,4 +1,0 @@
-driver=oracle.dbadmin.driver.OracleDriver
-url=dbadmin:oracle:thin:@localhost:1521:xe
-username=DBADMIN
-password=java1234

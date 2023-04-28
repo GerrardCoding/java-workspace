@@ -34,7 +34,7 @@ public class JDBCTemplate {
 		Properties prop = new Properties();
 		
 		try {
-			prop.load(new FileInputStream("resources/db.properties"));
+			prop.load(new FileInputStream("resources/dbadmin.properties"));
 			
 			Class.forName(prop.getProperty("driver"));
 			conn = DriverManager.getConnection(prop.getProperty("url"),
